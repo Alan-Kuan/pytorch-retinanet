@@ -215,6 +215,9 @@ class CSVDataset(Dataset):
         if len(img.shape) == 2:
             img = skimage.color.gray2rgb(img)
 
+        if img.shape[2] == 4:
+          img = img[:, :, :3]
+
         return img.astype(np.float32)/255.0
 
     def load_annotations(self, image_index):
