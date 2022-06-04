@@ -145,9 +145,12 @@ def main(args=None):
 
                 epoch_loss.append(float(loss))
 
-                print(
-                    'Epoch: {} | Iteration: {} | Classification loss: {:1.5f} | Regression loss: {:1.5f} | Running loss: {:1.5f}'.format(
-                        epoch_num, iter_num, float(classification_loss), float(regression_loss), np.mean(loss_hist)))
+                log = 'Epoch: {} | Iteration: {} | Classification loss: {:1.5f} | Regression loss: {:1.5f} | Running loss: {:1.5f}' \
+                  .format(epoch_num, iter_num, float(classification_loss), float(regression_loss), np.mean(loss_hist))
+
+                print(log)
+                with open('./retinanet.log', 'a') as f:
+                  f.write(log + '\n')
 
                 del classification_loss
                 del regression_loss
