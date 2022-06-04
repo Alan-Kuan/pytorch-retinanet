@@ -100,7 +100,9 @@ def main(args=None):
 				print(label_name)
 
 			cv2.imshow('img', img)
-			cv2.waitKey(0)
+			key = cv2.waitKey(0)
+			if key == ord('q') or key == 27: # esc
+				break
 
 
 

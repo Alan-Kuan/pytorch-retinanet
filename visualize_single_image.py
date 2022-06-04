@@ -116,7 +116,9 @@ def detect_image(image_path, model_path, class_list):
                 cv2.rectangle(image_orig, (x1, y1), (x2, y2), color=(0, 0, 255), thickness=2)
 
             cv2.imshow('detections', image_orig)
-            cv2.waitKey(0)
+            key = cv2.waitKey(0)
+            if key == ord('q') or key == 27:  # esc
+              break
 
 
 if __name__ == '__main__':
