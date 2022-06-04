@@ -232,13 +232,19 @@ def evaluate(
         average_precision  = _compute_ap(recall, precision)
         average_precisions[label] = average_precision, num_annotations
 
-
     print('\nmAP:')
+    with open('./perf_log.txt', 'a') as f:
+      f.write('\nmAP:\n')
+
     for label in range(generator.num_classes()):
         label_name = generator.label_to_name(label)
         print('{}: {}'.format(label_name, average_precisions[label][0]))
         print("Precision: ",precision[-1])
         print("Recall: ",recall[-1])
+        with open('./perf_log.txt', 'a') as f:
+          f.write('{}: {}\n'.format(label_name, average_precisions[label][0]))
+          f.write(f"Precision: { precision[-1] }\n")
+          f.write(f"Recall: { recall[-1] }\n")
         
         if save_path!=None:
             plt.plot(recall,precision)
