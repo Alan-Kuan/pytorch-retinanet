@@ -32,6 +32,8 @@ def main(args=None):
     parser.add_argument('--depth', help='Resnet depth, must be one of 18, 34, 50, 101, 152', type=int, default=50)
     parser.add_argument('--epochs', help='Number of epochs', type=int, default=100)
 
+    parser.add_argument('--model', help='Path to pretrained model')
+
     parser = parser.parse_args(args)
 
     # Create the data loaders
@@ -73,30 +75,28 @@ def main(args=None):
         sampler_val = AspectRatioBasedSampler(dataset_val, batch_size=1, drop_last=False)
         dataloader_val = DataLoader(dataset_val, num_workers=3, collate_fn=collater, batch_sampler=sampler_val)
 
-    # Create the model
-    if parser.depth == 18:
-        retinanet = model.resnet18(num_classes=dataset_train.num_classes(), pretrained=True)
-    elif parser.depth == 34:
-        retinanet = model.resnet34(num_classes=dataset_train.num_classes(), pretrained=True)
-    elif parser.depth == 50:
-        retinanet = model.resnet50(num_classes=dataset_train.num_classes(), pretrained=True)
-    elif parser.depth == 101:
-        retinanet = model.resnet101(num_classes=dataset_train.num_classes(), pretrained=True)
-    elif parser.depth == 152:
-        retinanet = model.resnet152(num_classes=dataset_train.num_classes(), pretrained=True)
+    if parser.model is None:
+      # Create the model
+      if parser.depth == 18:
+          retinanet = model.resnet18(num_classes=dataset_train.num_classes(), pretrained=True)
+      elif parser.depth == 34:
+          retinanet = model.resnet34(num_classes=dataset_train.num_classes(), pretrained=True)
+      elif parser.depth == 50:
+          retinanet = model.resnet50(num_classes=dataset_train.num_classes(), pretrained=True)
+      elif parser.depth == 101:
+          retinanet = model.resnet101(num_classes=dataset_train.num_classes(), pretrained=True)
+      elif parser.depth == 152:
+          retinanet = model.resnet152(num_classes=dataset_train.num_classes(), pretrained=True)
+      else:
+          raise ValueError('Unsupported model depth, must be one of 18, 34, 50, 101, 152')
+
+      retinanet = torch.nn.DataParallel(retinanet)
+
     else:
-        raise ValueError('Unsupported model depth, must be one of 18, 34, 50, 101, 152')
-
-    use_gpu = True
-
-    if use_gpu:
-        if torch.cuda.is_available():
-            retinanet = retinanet.cuda()
+      retinanet = torch.load(parser.model)
 
     if torch.cuda.is_available():
-        retinanet = torch.nn.DataParallel(retinanet).cuda()
-    else:
-        retinanet = torch.nn.DataParallel(retinanet)
+      retinanet = retinanet.cuda()
 
     retinanet.training = True
 
