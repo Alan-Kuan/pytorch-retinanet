@@ -149,7 +149,7 @@ def main(args=None):
                   .format(epoch_num, iter_num, float(classification_loss), float(regression_loss), np.mean(loss_hist))
 
                 print(log)
-                with open('./retinanet.log', 'a') as f:
+                with open('./loss_log.txt', 'a') as f:
                   f.write(log + '\n')
 
                 del classification_loss
