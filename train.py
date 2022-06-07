@@ -32,6 +32,7 @@ def main(args=None):
     parser.add_argument('--depth', help='Resnet depth, must be one of 18, 34, 50, 101, 152', type=int, default=50)
     parser.add_argument('--epochs', help='Number of epochs', type=int, default=100)
 
+    parser.add_argument('--graph_save_path', help='Path to save precision-recall curve')
     parser.add_argument('--model', help='Path to pretrained model')
 
     parser = parser.parse_args(args)
@@ -168,7 +169,7 @@ def main(args=None):
 
             print('Evaluating dataset')
 
-            mAP = csv_eval.evaluate(dataset_val, retinanet)
+            mAP = csv_eval.evaluate(dataset_val, retinanet, parser.graph_save_path)
 
         scheduler.step(np.mean(epoch_loss))
 
