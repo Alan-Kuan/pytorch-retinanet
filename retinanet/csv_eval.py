@@ -202,6 +202,7 @@ def evaluate(
                 assigned_annotation = np.argmax(overlaps, axis=1)
                 max_overlap         = overlaps[0, assigned_annotation]
 
+                # duplicate detection is counted as false positive
                 if max_overlap >= iou_threshold and assigned_annotation not in detected_annotations:
                     false_positives = np.append(false_positives, 0)
                     true_positives  = np.append(true_positives, 1)
@@ -226,17 +227,16 @@ def evaluate(
 
         # compute recall and precision
         recall    = true_positives / num_annotations
-        precision = true_positives / np.maximum(true_positives + false_positives, np.finfo(np.float64).eps)
+        precision = true_positives / np.maximum(true_positives + false_positives, np.finfo(np.float64).eps)  # use eps to prevent divided by zero if TP+FP = 0
 
         # compute average precision
         average_precision  = _compute_ap(recall, precision)
         average_precisions[label] = average_precision, num_annotations
 
-    print('\nmAP:')
-    with open('./perf_log.txt', 'a') as f:
-      f.write('\nmAP:\n')
+        print('\nmAP:')
+        with open('./perf_log.txt', 'a') as f:
+          f.write('\nmAP:\n')
 
-    for label in range(generator.num_classes()):
         label_name = generator.label_to_name(label)
         print('{}: {}'.format(label_name, average_precisions[label][0]))
         print("Precision: ",precision[-1])
@@ -258,8 +258,6 @@ def evaluate(
 
             # function to show the plot
             plt.savefig(save_path+'/'+label_name+'_precision_recall.jpg')
-
-
 
     return average_precisions
 
