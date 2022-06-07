@@ -238,13 +238,13 @@ def evaluate(
           f.write('\nmAP:\n')
 
         label_name = generator.label_to_name(label)
-        print('{}: {}'.format(label_name, average_precisions[label][0]))
-        print("Precision: ",precision[-1])
-        print("Recall: ",recall[-1])
+        print(f'{ label_name }: { average_precision }')
+        print(f'Precision: { precision[-1] }')
+        print(f'Recall: { recall[-1] }')
         with open('./perf_log.txt', 'a') as f:
-          f.write('{}: {}\n'.format(label_name, average_precisions[label][0]))
-          f.write(f"Precision: { precision[-1] }\n")
-          f.write(f"Recall: { recall[-1] }\n")
+          f.write(f'{ label_name }: { average_precision }\n')
+          f.write(f'Precision: { precision[-1] }\n')
+          f.write(f'Recall: { recall[-1] }\n')
         
         if save_path!=None:
             plt.plot(recall,precision)

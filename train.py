@@ -169,7 +169,7 @@ def main(args=None):
 
             print('Evaluating dataset')
 
-            mAP = csv_eval.evaluate(dataset_val, retinanet, parser.graph_save_path)
+            mAP = csv_eval.evaluate(dataset_val, retinanet, save_path=parser.graph_save_path)
 
         scheduler.step(np.mean(epoch_loss))
 
