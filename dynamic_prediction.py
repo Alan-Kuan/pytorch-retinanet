@@ -114,7 +114,7 @@ def main(args=None):
     out = cv2.VideoWriter('output.mp4', fourcc, 20.0, (640,  480))
 
   frame_count = 0
-  while(True):
+  while cap.isOpened():
     # Capture frame-by-frame
     ret, frame = cap.read()
 
@@ -123,7 +123,7 @@ def main(args=None):
       print("Can't receive frame (stream end?). Exiting ...")
       break
 
-    if frame_count == 30:
+    if frame_count == 0:
       frame = frame.astype(np.float32) / 255.0
       frame = transform(frame)
       frame = collater([frame])
@@ -134,13 +134,13 @@ def main(args=None):
         scores, classification, transformed_anchors = retinanet(frame.float())
 
       idxs = np.where(scores.cpu() > 0.5)
-      img = np.array(255 * unnormalize(frame[0, :, :, :])).copy()
+      frame = np.array(255 * unnormalize(frame[0, :, :, :])).copy()
 
-      img[img < 0] = 0
-      img[img > 255] = 255
+      frame[frame < 0] = 0
+      frame[frame > 255] = 255
 
-      img = np.transpose(img, (1, 2, 0))
-      img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_BGR2RGB)
+      frame = np.transpose(frame, (1, 2, 0))
+      frame = cv2.cvtColor(frame.astype(np.uint8), cv2.COLOR_BGR2RGB)
 
       for j in range(idxs[0].shape[0]):
         bbox = transformed_anchors[idxs[0][j], :]
@@ -152,22 +152,22 @@ def main(args=None):
 
         # without_mask
         if label == 0:
-          cv2.rectangle(img, (x1, y1), (x2, y2), color=(5, 13, 240), thickness=2)
+          cv2.rectangle(frame, (x1, y1), (x2, y2), color=(5, 13, 240), thickness=2)
         # with_mask
         elif label == 1:
-          cv2.rectangle(img, (x1, y1), (x2, y2), color=(31, 224, 89), thickness=2)
+          cv2.rectangle(frame, (x1, y1), (x2, y2), color=(31, 224, 89), thickness=2)
         # mask_wear_incorrect
         elif label == 2:
-          cv2.rectangle(img, (x1, y1), (x2, y2), color=(33, 174, 255), thickness=2)
+          cv2.rectangle(frame, (x1, y1), (x2, y2), color=(33, 174, 255), thickness=2)
 
     frame_count += 1
     if frame_count == 30:
       frame_count = 0
 
-    if parser.video != 0:
-      cv2.imshow('frame', img)
+    if parser.video == 0:
+      cv2.imshow('frame', frame)
     else:
-      out.write(img)
+      out.write(frame)
 
     if cv2.waitKey(1) == ord('q'):
       break
