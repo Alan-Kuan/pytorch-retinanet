@@ -63,7 +63,7 @@ def main(args=None):
   total_time = 0
   img_num = 0
 
-  for data in enumerate(dataloader_val):
+  for data in dataloader_val:
 
     with torch.no_grad():
       st = time.time()
